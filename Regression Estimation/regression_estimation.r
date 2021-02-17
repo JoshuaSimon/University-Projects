@@ -1,5 +1,5 @@
 # Regression estimation.
-# This R script contains fuctions for the calculation of
+# This R script contains functions for the calculation of
 # the regression estimation known form survey sampling in
 # statistics.
 # Joshua Simon, 17.02.2020.
