@@ -65,28 +65,28 @@ reg_estimation <- function(N, n, xu_mean, xk_sum, yk_sum,
 
 ci_estimation <- function(alpha, n, y_mean, var__) {
   #' Calculates the confidence interval (CI) of given estimations.
-  ci_lower <- y_mean - qt(1 - alpha/2, n) * var__
-  ci_upper <- y_mean + qt(1 - alpha/2, n) * var__
+  ci_lower <- y_mean - qt(1 - alpha/2, n) * sqrt(var__)
+  ci_upper <- y_mean + qt(1 - alpha/2, n) * sqrt(var__)
   
   print(paste0("CI: [", ci_lower, " ,", ci_upper, "]"))
 }
 
 # ----- Main program. -----
 # Set values.
-N <- 2000
-n <-  50
-xu_mean <- 5.471
-xk_sum <- 215.50
-yk_sum <- 229.84
-xk_squared_sum <- 4989.51
-yk_squared_sum <- 6812.20
-xk_yk_sum <- 5788.53
+N <- 5000
+n <-  500
+xu_mean <- 121.2
+xk_sum <- 60e3
+yk_sum <- 65e3
+xk_squared_sum <- 8.5e6
+yk_squared_sum <- 10.25e6
+xk_yk_sum <- 9.1e6
 
 # Call functions.
 estimators <- reg_estimation(N, n, xu_mean, xk_sum, yk_sum, 
       xk_squared_sum, yk_squared_sum, xk_yk_sum)
 
-alpha <- 0.05
+alpha = 0.05
 # CI for regression estimation.
 ci_estimation(alpha, n, estimators[1,1], estimators[1,2])
 
