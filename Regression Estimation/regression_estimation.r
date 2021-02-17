@@ -86,7 +86,7 @@ xk_yk_sum <- 5788.53
 estimators <- reg_estimation(N, n, xu_mean, xk_sum, yk_sum, 
       xk_squared_sum, yk_squared_sum, xk_yk_sum)
 
-alpha = 0.05
+alpha <- 0.05
 # CI for regression estimation.
 ci_estimation(alpha, n, estimators[1,1], estimators[1,2])
 
