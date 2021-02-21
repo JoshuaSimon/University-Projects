@@ -1,0 +1,95 @@
+\documentclass{article}
+\title{A Small Collection Of Mathematical Formulas For The 
+Prospective Statistician}
+\author{Joshua Simon  \\
+	Otto-Friedrich-University Bamberg \\
+	}
+
+\date{\today}
+
+% Packages.
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+
+\begin{document}
+
+\maketitle
+
+
+%\begin{abstract}
+%Short introduction to subject of the paper \ldots 
+%\end{abstract}
+
+\section{Basic Arithmetic}
+\paragraph{Logarithms.} In the following let $a$, $b > 0$ and $n \in \mathbb{R}$. Then
+\begin{gather*}
+    ln(a \cdot b) = ln(a) + ln(b) \\
+    ln(\frac{a}{b}) = ln(a) - ln(b) \\
+    ln(a^n) = n \cdot ln(a) \\
+    e^{ln(a)} = ln(e^{a}) = a.
+\end{gather*}
+
+\paragraph{Binomial Coefficient.} Suppose $0 < k \leq n$. Then
+\begin{gather*}
+    \binom{n}{k} = \frac{n!}{k! \cdot (n-k)!}
+\end{gather*}
+where $n! = 1 \cdot 2 \cdot \ldots \cdot n$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Differential Calculus} \label{DifferentialCalculus}
+\paragraph{Elementary Derivatives.} In the following let $f$ be a real-valued function of $x$ and $a, b, r \in \mathbb{R}$. Then the derivative of $f$ is given by $f'$ as
+
+\begin{align*}
+    f(x) = x^r &\rightarrow f'(x) = r \cdot x^{r - 1} \\
+    f(x) = e^x &\rightarrow f'(x) = e^x \\
+    f(x) = e^{a \cdot x + b} &\rightarrow f'(x) = a \cdot e^{a \cdot x + b} \\
+    f(x) = ln(x) &\rightarrow f'(x) = \frac{1}{x} \\
+    f(x) = r^x &\rightarrow f'(x) = r^x \cdot ln(r) \\
+    f(x) = \frac{1}{x^r}  &\rightarrow f'(x) = - r \cdot x^{-r - 1} \\
+    f(x) = sin(x) &\rightarrow f'(x) = cos(x) \\
+    f(x) = cos(x) &\rightarrow f'(x) = - sin(x).
+\end{align*}
+
+\paragraph{Differentiation rules.} In the following let $h, u, v$ be real-valued functions of $x$.
+\begin{itemize}
+    \item Product Rule: $h(x) = u(x) \cdot v(x) \rightarrow h'(x) = u'(x) \cdot v(x) + u(x) \cdot v'(x)$
+    \item Chain Rule: $h(x) = u(v(x)) \rightarrow  h'(x) = u'(v(x)) \cdot v'(x)$
+    \item Reciprocal Rule: $h(x) = \frac{1}{v(x)} \rightarrow  h'(x) = \frac{v'(x)}{(v(x))^2}$
+    \item Quotient Rule: $h(x) = \frac{u(x)}{v(x)} \rightarrow  h'(x) = \frac{v(x)u'(x) - u(x)v'(x)}{(v(x))^2}$
+\end{itemize}
+
+\paragraph{Gradient.} Let $f$ be a differentiable fuction of $n$ variables. Then
+\begin{gather*}
+    \mathbf{grad}(f) = \nabla f = \left( \frac{\partial}{\partial x_1} f(x) \dots \frac{\partial}{\partial x_n} f(x) \right)^T.
+\end{gather*}
+
+\paragraph{Jacobian Matrix.} Let $f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$ be a differentiable function of $n$ variables. Then the Jacobian matrix $\mathbf {J}$ of $f$ is an $m \times n$ matrix whose $(i,j)$th entry is ${\mathbf {J}_{ij}={\frac {\partial f_{i}}{\partial x_{j}}}}$. Which is 
+\begin{gather*}
+    {\mathbf {J} ={\begin{bmatrix}{\dfrac {\partial \mathbf {f} }{\partial x_{1}}}&\cdots &{\dfrac {\partial \mathbf {f} }{\partial x_{n}}}\end{bmatrix}}={\begin{bmatrix}\nabla ^{T}f_{1}\\\vdots \\\nabla ^{T}f_{m}\end{bmatrix}}={\begin{bmatrix}{\dfrac {\partial f_{1}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{1}}{\partial x_{n}}}\\\vdots &\ddots &\vdots \\{\dfrac {\partial f_{m}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{m}}{\partial x_{n}}}\end{bmatrix}}}
+\end{gather*}
+where ${\nabla ^{T}f_{i}}$ is the transpose (row vector) of the gradient of the $i$th component.
+
+\paragraph{Symmetry Of Second Derivatives (Schwarz's theorem).} The order of taking partial derivatives of a function $f(x) = f(x_1, x_2, \dots , x_n)$ of $n$ variables is interchangeable
+\begin{gather*}
+    \frac{\partial}{\partial x_i} \left( \frac{\partial}{\partial x_j} f(x) \right) = \frac{\partial}{\partial x_j} \left( \frac{\partial}{\partial x_i} f(x) \right).
+\end{gather*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Integral Calculus} \label{integralCalculus}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{thebibliography}{9}
+    \bibitem[Bron]{Bron} \emph{Taschenbuch der Mathematik.}
+    I. N. Bronstein, K. A. Semendjajew, G. Musiol, H. Mühlig, 11. Auflage, 2020.
+\end{thebibliography}
+
+\end{document}
