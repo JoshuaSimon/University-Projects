@@ -108,7 +108,11 @@ Let  $f$ be a real-valued function on a closed interval $[a,b]$ and $F$ an antid
    \int_{a}^{b} u(x)v'(x) dx = \left[ u(x)v(x) \right]_a^b - \int_{a}^{b} u'(x)v(x) dx.
 \end{gather*}
 
-\paragraph{Integration By Substitution.}
+\paragraph{Integration By Substitution.} Let $I$ be an real interval, $f: I \rightarrow \mathbb{R}$ a continuous function and $\varphi: [a,b] \rightarrow I$ continuously differentiable. Then
+\begin{gather*}
+    \int _{a}^{b}f(\varphi (x))\varphi '(x)\,dx=\int _{\varphi (a)}^{\varphi (b)}f(u)\,du.
+\end{gather*}
+The substitution $u = \varphi(x)$ yields ${\frac {du}{dx}}=\varphi '(x)$ which leads to $du=\varphi '(x) \,dx$.
 
 
 
