@@ -123,7 +123,7 @@ if __name__ == "__main__":
     time_naive = time()
     delta_naive = naive_mc(draws, parameters)
     time_naive = time() - time_naive
-    print(f"Serial execution time on 1 CPU core using numpy: {time_naive}.")
+    print(f"Parallel execution time using numpy and numba: {time_naive}.")
 
 
     # Validation.
