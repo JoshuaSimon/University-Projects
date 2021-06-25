@@ -3,5 +3,5 @@ This repository contains programming related topics from my masters degree which
 
 ## Contents
 * R implementation of regression estimation.
-* A small collection of mathematical formulas for the 
-prospective statistician (Tex, PDF).
+* A small collection of mathematical formulas for the prospective statistician (Tex, PDF).
+* Examples for simulations in Bayesian Statistics.
