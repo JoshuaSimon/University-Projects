@@ -5,7 +5,6 @@ from sklearn.cluster import KMeans
 
 class KMeansClustering:
     def __init__(self, num_culsters) -> None:
-        # Number of clusters.
         self.num_culsters = num_culsters
         self.labels_ = None
         self.cluster_centers_ = None
@@ -16,34 +15,35 @@ class KMeansClustering:
         # Number of features in the data.
         self.num_features = data.shape[1]
 
-        # Generate random centers, here we use sigma and mean to ensure it represent the whole data.
+        # Generate random centers for initialization.
         mean = np.mean(data, axis = 0)
         std = np.std(data, axis = 0)
         centers = np.random.randn(self.num_culsters, self.num_features) * std + mean
 
-        centers_old = np.zeros(centers.shape) # to store old centers
-        centers_new = deepcopy(centers) # Store new centers
-
+        # Setting up shape for containers.
+        centers_old = np.zeros(centers.shape)
+        centers_new = deepcopy(centers)
         clusters = np.zeros(self.num_observations)
         distances = np.zeros((self.num_observations, self.num_culsters))
 
         error = np.linalg.norm(centers_new - centers_old)
 
-        # When, after an update, the estimate of that center stays the same, exit loop
+        # When, after an update, the estimate of that center stays the same, exit loop.
         while error != 0:
-            # Measure the distance to every center
+            # Measure the distance to every center.
             for i in range(self.num_culsters):
                 distances[:,i] = np.linalg.norm(data - centers[i], axis=1)
-            # Assign all training data to closest center
+            # Assign all training data to closest center.
             clusters = np.argmin(distances, axis = 1)
             
             centers_old = deepcopy(centers_new)
-            # Calculate mean for every cluster and update the center
+            # Calculate mean for every cluster and update the center.
             for i in range(self.num_culsters):
                 centers_new[i] = np.mean(data[clusters == i], axis=0)
             error = np.linalg.norm(centers_new - centers_old)
 
         self.cluster_centers_ =  centers_new 
+        self.labels_ = clusters
 
 
 if __name__ == "__main__":
@@ -60,15 +60,16 @@ if __name__ == "__main__":
 
     names = ["Sklean KMeans", "Own implementaion of KMeans"]
     models = [
-        KMeans(n_clusters=3, random_state=42),
-        KMeansClustering(num_culsters=3)
+        KMeans(n_clusters=2, random_state=42),
+        KMeansClustering(num_culsters=2)
     ]
-
+    
     for name, model in zip(names, models):
         print(f"Model: {name}")
         model.fit(data)
-
+    
         for region, label in zip(regions, model.labels_):
             print(f"Region: {region.ljust(15)}   Label: {label}")
 
         print("\n")
+    
