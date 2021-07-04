@@ -1,0 +1,325 @@
+---
+title: "Cluster Analyse - Lösung"
+author: "Joshua Simon"
+date: "4 7 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aufgabe 6
+
+### Teil a) 
+
+Bestimmen Sie auf Basis der quantitativen Merkmale die Distanz zwischen den drei Personen. Verwenden Sie dafür die _Minkowski-q-Metrik_ mit $q = 1$ und $q = 2$.
+
+_Lösung:_
+
+Sei zunächst $q = 1$. Damit ergeben sich für die Distanzen $d_{ij}$ zwischen der $i$-ten und $j$-ten Beobachtung
+
+\begin{align}
+  d_{12} & = \left( \lvert 55 - 23 \rvert + \lvert 2500 - 1800 \rvert + \lvert 4 - 3 \rvert \right) = 733 \\
+  d_{13} & = 1028 \\
+  d_{23} & = 1711 
+\end{align}
+
+Sei nun $q = 2$. Die euklidschen Distanzen berechnen sich zu
+
+\begin{align}
+  d_{12} & = \left( \lvert 55 - 23 \rvert^2 + \lvert 2500 - 1800 \rvert^2 + \lvert 4 - 3 \rvert^2 \right)^{\frac{1}{2}} = 700.7318 \\
+  d_{13} & = 1000.2960 \\
+  d_{23} & = 1700.0215 
+\end{align}
+
+```{python, python.reticulate = FALSE, eval=F, echo=T}
+import numpy as np
+from math import sqrt
+
+# Ex 6a)
+def minkowski_norm(x_k, q):
+    mean = np.mean(x_k)
+    s = (1/len(x_k) * sum([abs(x - mean)**q for x in x_k]))**(1/q)
+    return (np.array(x_k) - mean) / s
+
+def minkowski_metric(x_i, x_j, q=2, norm=False):
+    if norm:
+        x_i = minkowski_norm(x_i, q)
+        x_j = minkowski_norm(x_j, q)
+    return sum([abs(i - j)**q for i, j in zip(x_i, x_j)])**(1/q)
+
+
+x_1 = [55, 2500, 4]
+x_2 = [23, 1800, 3]
+x_3 = [31, 3500, 0]
+
+
+print("Minkowski distance for q = 1:")
+print(minkowski_metric(x_1, x_2, 1))
+print(minkowski_metric(x_1, x_3, 1))
+print(minkowski_metric(x_2, x_3, 1))
+print("\n")
+
+print("Minkowski distance for q = 2:")
+print(minkowski_metric(x_1, x_2, 2))
+print(minkowski_metric(x_1, x_3, 2))
+print(minkowski_metric(x_2, x_3, 2))
+print("\n")
+
+```
+
+```{}
+Minkowski distance for q = 1:
+733.0
+1028.0
+1711.0
+
+
+Minkowski distance for q = 2:
+700.7317603762513
+1000.2959562049624
+1700.021470452653
+```
+
+
+### Teil b)
+
+Ist eine Skalierung der Merkmale in diesem Fall sinnvoll? Wie verandert sich das
+Ergebnis?
+
+_Lösung:_ Die _Minkowski-q-Metrik_ ist nicht skaleninvariant, d.h. die Metrik verändert sich bei Sklaierung.
+
+
+### Teil c)
+
+Berechnen Sie für die qualitativen Merkmale die Ähnlichkeiten zwischen den Personen mittels eines M-Koeffizienten und eines S-Koeffizienten. Kodieren Sie dafür die
+Merkmale mit "Ja/m = 1" und "Nein/w = 0".
+
+_Lösung:_
+
+Für die vorliegenden Beobachtungen ergeben sich die folgenden Kontingenztabellen.
+
+* $i = 1$, $j = 2$: $\quad a = 0$, $b = 2$, $c = 0$, $d = 1$
+
+
+* $i = 1$, $j = 3$: $\quad a = 1$, $b = 1$, $c = 1$, $d = 0$
+
+
+* $i = 2$, $j = 3$: $\quad a = 0$, $b = 0$, $c = 2$, $d = 1$
+
+
+```{python, python.reticulate = FALSE, eval=F, echo=T}
+# Ex 6c)
+def m_s_coeff(x_i, x_j, gamma=0.5, coeff="m"):
+    a = 0
+    b = 0 
+    c = 0
+    d = 0
+
+    for i, j in zip(x_i, x_j):
+        if i == 1 and j == 1:
+            a += 1
+        elif i == 1 and j == 0:
+            b += 1
+        elif i == 0 and j == 1:
+            c += 1
+        elif i == 0 and j == 0:
+            d += 1
+
+    print(f"Table: a = {a}, b = {b}, c = {c}, d = {d}")
+
+    if coeff == "m":
+        s_ij = gamma * (a + d) / (gamma * (a + d) + (1 - gamma) * (b + c))
+    elif coeff == "s":
+        s_ij = gamma * a / (gamma * a + (1 - gamma) * (b + c))
+
+    return s_ij
+
+
+x_1 = [1, 1, 0]
+x_2 = [0, 0, 0]
+x_3 = [0, 1, 1]
+
+print("M-Coefficients")
+print("--------------")
+print("Simple-Matching-Coefficient")
+print(m_s_coeff(x_1, x_2, gamma=0.5))
+print(m_s_coeff(x_1, x_3, gamma=0.5))
+print(m_s_coeff(x_2, x_3, gamma=0.5))
+print("\n")
+
+print("Rogers and Tanimoto")
+print(m_s_coeff(x_1, x_2, gamma=1/3))
+print(m_s_coeff(x_1, x_3, gamma=1/3))
+print(m_s_coeff(x_2, x_3, gamma=1/3))
+print("\n")
+
+print("Sokal and Sneath")
+print(m_s_coeff(x_1, x_2, gamma=2/3))
+print(m_s_coeff(x_1, x_3, gamma=2/3))
+print(m_s_coeff(x_2, x_3, gamma=2/3))
+print("\n")
+
+print("S-Coefficients")
+print("--------------")
+print("Jaccard-Coefficient")
+print(m_s_coeff(x_1, x_2, gamma=0.5, coeff="s"))
+print(m_s_coeff(x_1, x_3, gamma=0.5, coeff="s"))
+print(m_s_coeff(x_2, x_3, gamma=0.5, coeff="s"))
+print("\n")
+
+print("Sokal und Sneath")
+print(m_s_coeff(x_1, x_2, gamma=1/3, coeff="s"))
+print(m_s_coeff(x_1, x_3, gamma=1/3, coeff="s"))
+print(m_s_coeff(x_2, x_3, gamma=1/3, coeff="s"))
+print("\n")
+```
+
+```{}
+M-Coefficients
+--------------
+Simple-Matching-Coefficient
+Table: a = 0, b = 2, c = 0, d = 1
+0.3333333333333333
+Table: a = 1, b = 1, c = 1, d = 0
+0.3333333333333333
+Table: a = 0, b = 0, c = 2, d = 1
+0.3333333333333333
+
+
+Rogers and Tanimoto
+Table: a = 0, b = 2, c = 0, d = 1
+0.19999999999999998
+Table: a = 1, b = 1, c = 1, d = 0
+0.19999999999999998
+Table: a = 0, b = 0, c = 2, d = 1
+0.19999999999999998
+
+
+Sokal and Sneath
+Table: a = 0, b = 2, c = 0, d = 1
+0.49999999999999994
+Table: a = 1, b = 1, c = 1, d = 0
+0.49999999999999994
+Table: a = 0, b = 0, c = 2, d = 1
+0.49999999999999994
+
+
+S-Coefficients
+--------------
+Jaccard-Coefficient
+Table: a = 0, b = 2, c = 0, d = 1
+0.0
+Table: a = 1, b = 1, c = 1, d = 0
+0.3333333333333333
+Table: a = 0, b = 0, c = 2, d = 1
+0.0
+
+
+Sokal und Sneath
+Table: a = 0, b = 2, c = 0, d = 1
+0.0
+Table: a = 1, b = 1, c = 1, d = 0
+0.19999999999999998
+Table: a = 0, b = 0, c = 2, d = 1
+0.0
+```
+
+
+### Teil d) 
+Das Merkmal Geschlecht könnte auch mit "w = 1" und "m = 0" kodiert werden. Hat diese eineindeutige Transformation einen Einfluss auf die Ähnlichkeiten?
+
+_Lösung:_ Nein.
+
+
+### Teil e) 
+
+Welche Ansätze bestehen bei der Verwendung von unterschiedlichen Messniveaus?
+
+_Lösung:_ Vgl. Folie 198.
+
+
+## Aufhabe 7
+
+### Teil a)
+
+Führen Sie eine Clusteranalyse nach dem _Single-Linkage-Verfahren_ durch und erstellen
+Sie die kophenetische Matrix $D^\star$.
+
+_Lösung:_
+
+```{r}
+D <- matrix(c(
+  c(0.00, 0.80, 4.16, 3.28, 3.92, 4.69),
+  c(0.80, 0.00, 4.14, 3.57, 4.00, 4.64),
+  c(4.16, 4.14, 0.00, 2.71, 1.98, 2.15),
+  c(3.28, 3.57, 2.71, 0.00, 3.16, 3.78),
+  c(3.92, 4.00, 1.98, 3.16, 0.00, 2.52),
+  c(4.69, 4.64, 2.15, 3.78, 2.52, 0.00)
+), byrow = F, ncol = 6)
+
+single_linkage <- hclust(as.dist(D), method="single")
+single_linkage$height
+
+cop_single_linkage=cophenetic(single_linkage)
+cop_single_linkage
+```
+
+### Teil b)
+
+Erstellen Sie das dazugehorige Dendrogramm zu der Clusterbildung.
+
+_Lösung:_
+
+```{r}
+plot(single_linkage)
+```
+
+### Teil c)
+
+Bestimmen Sie die Anzahl der zu bildenden Segmente nach dem Test von Mojena.
+
+_Lösung:_
+
+```{r}
+alpha <- single_linkage$height
+alpha_mean <- mean(alpha)
+alpha_std <- sd(alpha)
+
+alpha_scale <- (alpha - alpha_mean) / alpha_std
+
+i <- which(alpha_scale >= 2.5)[1]
+i
+
+if (is.na(i)) {
+  i <- length(alpha_scale)
+}
+
+n <- nrow(D)
+classes <- n + 1 - i
+classes
+```
+
+### Teil d)
+
+Führen Sie für die Regionen das K-Means-Verfahren durch.
+
+_Lösung:_
+
+```{r}
+data <- matrix(c(
+  c(1524.8, 265.4, 272, 79, 24, 223.5),
+  c(1596.9, 323.6, 285, 87, 23, 333.9),
+  c(2299.7, 610.3, 241, 45, 9, 632.1),
+  c(864.1, 303.9, 220, 53, 11, 484.7),
+  c(2669.9, 645.5, 202, 61, 15, 438.6),
+  c(2985.2, 571.2, 226, 45, 16, 1103.9)
+), byrow = T, ncol = 6)
+
+KM=kmeans(data,2)
+KM
+
+plot(data, col = KM$cluster, lwd=2)
+points(KM$centers, col=1:2, pch=8, lwd=2)
+```
