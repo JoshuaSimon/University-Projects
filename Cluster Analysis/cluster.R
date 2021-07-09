@@ -56,4 +56,116 @@ KM
 plot(data, col = KM$cluster, lwd=2)
 # Der Stern fur die Zentren:
 points(KM$centers, col=1:2, pch=8, lwd=2)
+points(fit[[2]], col="green")
 
+
+########### k Means ###########
+library("pracma")
+
+euc_dist <- function(x1, x2){
+  return(sqrt(sum((x1 - x2) ^ 2)))
+} 
+
+# Choose random observations as centroids
+k <- 2
+centers <- data[c(1,2), ]
+dist <- matrix(nrow = nrow(data), ncol = k)
+label <- matrix(nrow = nrow(data), ncol = k)
+
+# Calculate distances from each observation to the selected centroids.
+for (row in 1:nrow(data)) {
+  for (clus in 1:k) {
+    dist[row, clus] <- Norm(centers[clus, ] - data[row, ], p=2)
+  }
+  
+  # Determine the minimum distance from each observation to a centroid.
+  label[row, ] <- ifelse(dist[row, ] == min(dist[row, ]), 1, 0) 
+  
+}
+
+dist
+label
+
+# Calculate new centroids.
+for (i in 1:ncol(label)){
+  #print(which(label[, i] == 1))
+  #print(data[which(label[, i] == 1), ])
+  centers[i, ] <- apply(data[which(label[, i] == 1), ], MARGIN = 2, FUN = mean)
+}
+
+centers
+
+
+
+
+k_means <- function(data, k=3, center_idx = NULL, output = FALSE, max_iter = 10) {
+  iter <- 0
+  error <- 0
+  while (iter < max_iter) {
+    # Set starting centroids. If no starting values are
+    # provided within the function call, random starting
+    # values are chosen. 
+    if (iter == 0) {
+      if (is.null(center_idx)) {
+        centers <- data[sample(1:nrow(data), size = k, replace = FALSE), ]
+      } else {
+        centers <- data[center_idx, ]
+      }
+    }
+    
+    centers_before <- centers
+    
+    # Containers for distances and cluster labels.
+    dist <- matrix(nrow = nrow(data), ncol = k)
+    label <- matrix(nrow = nrow(data), ncol = k)
+    
+    # Calculate distances from each observation to the selected centroids.
+    for (row in 1:nrow(data)) {
+      for (clus in 1:k) {
+        dist[row, clus] <- Norm(centers[clus, ] - data[row, ], p=2)
+      }
+      
+      # Determine the minimum distance from each observation to a centroid.
+      label[row, ] <- ifelse(dist[row, ] == min(dist[row, ]), 1, 0) 
+    }
+    
+    # Calculate new centroids.
+    for (i in 1:ncol(label)){
+      centers[i, ] <- apply(data[which(label[, i] == 1), ], MARGIN = 2, FUN = mean)
+    }
+    
+    # Print output for every iteration.
+    if (output) {
+      print(paste("Iteration: ", iter))
+      print("------------------------")
+      print("Distance matrix:")
+      print(dist)
+      print("Cluster labels (by column):")
+      print(label)
+      print("Center coordinates:")
+      print("Center:")
+      print(centers)
+      print("")
+    }
+    
+    # If the distance between the new and the old center is equal to
+    # zero, convergence is reached and we can exit the loop. 
+    error <- norm(abs(centers - centers_before))
+    if (error == 0) {
+      print(paste0("Converged after ", iter, " iterations."))
+      break
+    }
+    
+    iter <- iter + 1
+  }
+  
+  return(list(label, centers))
+}
+
+# Fit with random starting values.
+fit <- k_means(data, k = 2, center_idx = NULL, output = TRUE, max_iter = 10)
+fit
+
+# Fit with fixed starting values.
+fit <- k_means(data, k = 2, center_idx = c(1,3), output = TRUE, max_iter = 10)
+fit

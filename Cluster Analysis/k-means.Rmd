@@ -1,0 +1,243 @@
+---
+title: "Cluster Analyse - K-Means Implementierung"
+author: "Joshua Simon"
+date: "7/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aufgabe 7
+### Teil d)
+
+Führen Sie für die Regionen das K-Means-Verfahren durch.
+
+## Rechnung per Hand
+
+Im Folgenden seinen $x_i^T$ die Zeilen des Datensatzes.
+
+### Start des Verfahrens
+
+* Bestimme Anzahl $k$ der Cluster: $k = 2$
+* Bestimme $k$ zufällige Zentroiden (Startwerte): Wähle z.B. Beobachtung $i = 1$ Munster und $i = 3$ Duisburg. Damit ist 
+  \begin{equation}
+    \color{blue}{z_1}^{(0)} := x_1
+  \end{equation}
+  \begin{equation}
+    \color{red}{z_2}^{(0)} := x_3
+  \end{equation}
+
+### 0. Iteration
+
+* Berechne die euklidschen Abstände von allen Beobachtungen zu den gewählten Zentroiden. Dabei sei $d_{ij}$ die euklidsche Distanz zwischen der $i$-ten Beobachtung und dem $j$-ten Zentroiden. 
+\begin{equation}
+  d_{ij} = \lVert x_i - z_j \rVert_2 = \left( \sum_{k=1}^{n} (x_{i,k} - z_{j,k})^2 \right)^{\frac{1}{2}}
+\end{equation}
+
+* Wir berechnen für den ersten Zentroiden die Distanzen
+\begin{align}
+  d_{11} = \lVert x_1 - \color{blue}{z_1}^{(0)} \rVert_2 & = 0.0000 \\
+  d_{21} = \lVert x_2 - \color{blue}{z_1}^{(0)} \rVert_2 & = 144.9407 \\
+  d_{31} = \lVert x_3 - \color{blue}{z_1}^{(0)} \rVert_2 & = 942.7205 \\
+  d_{41} = \lVert x_4 - \color{blue}{z_1}^{(0)} \rVert_2 & = 713.9896 \\
+  d_{51} = \lVert x_5 - \color{blue}{z_1}^{(0)} \rVert_2 & = 1227.7227 \\
+  d_{61} = \lVert x_6 - \color{blue}{z_1}^{(0)} \rVert_2 & = 1733.4134
+\end{align}
+
+* Wir berechnen für den zweiten Zentroiden die Distanzen
+\begin{align}
+  d_{12} = \lVert x_1 - \color{red}{z_2}^{(0)} \rVert_2 & = 942.7205 \\
+  d_{22} = \lVert x_2 - \color{red}{z_2}^{(0)} \rVert_2 & = 817.8899 \\
+  d_{32} = \lVert x_3 - \color{red}{z_2}^{(0)} \rVert_2 & = 0.0000 \\
+  d_{42} = \lVert x_4 - \color{red}{z_2}^{(0)} \rVert_2 & = 1475.4877 \\
+  d_{52} = \lVert x_5 - \color{red}{z_2}^{(0)} \rVert_2 & = 421.3577 \\
+  d_{62} = \lVert x_6 - \color{red}{z_2}^{(0)} \rVert_2 & = 833.2516
+\end{align}
+
+* Anhand dieser Distanzen können wir nun die Beobachtungen einem Cluster zuordnen. Dabei wird eine Beobachtung immer dem Cluster zugewiesen, gegenüber dessen Zentroiden sie die geringste Distanz $d_{ij}$ aufweist. Wir bestimmen also 
+\begin{equation}
+  \min \{ d_{i\color{blue}{1}}, d_{i\color{red}{2}} \}
+\end{equation}
+
+* Zur besseren Veranschaulichung schreiben wir hierfür die Distanzen in eine Matrix, wobei die erste Spalte die Distanzen $d_{i\color{blue}{1}}$ und die zweite Spalte die Distantzen $d_{i\color{red}{2}}$ beinhaltet. Das jeweils zu bestimmende Minimum ist damit das Zeilenminimum. Dies ist hier farblich markiert.
+\begin{equation}
+  \begin{pmatrix}
+    \color{blue}{0.0000} &  942.7205 \\
+    \color{blue}{144.9407} & 817.8899 \\
+    942.7205 & \color{red}{0.0000} \\
+    \color{blue}{713.9896} & 1475.4877 \\
+    1227.7227 & \color{red}{421.3577} \\
+    1733.4134 & \color{red}{833.2516}
+  \end{pmatrix}
+\end{equation}
+
+* Die blau markierten Distanzen bzw. die dahinterstehende Beobachtungen $x_1, x_2, x_4$ bilden Cluster $\color{blue}1$ und die roten $x_3, x_5, x_6$ Cluster $\color{red}2$.
+
+* Nun lassen sich neue Zentroide aus den Mittelwerten der Beobachtungen aus einem Cluster berechnen. Dabei ist $\color{blue}{z_1}^{(1)}$ in unserem Fall der spaltenweise Mittelwert der Beobachtungen $x_1, x_2, x_4$ und $\color{red}{z_2}^{(1)}$ der spaltenweise Mittelwert von $x_3, x_5, x_6$. Sei hier $p$ die Anzahl an Beobachtungen in einem Cluster.
+\begin{align}
+  \color{blue}{z_{1,k}}^{(1)} & = \frac{1}{p} \sum_{i=1}^{p} x_{i,k} \\
+  \color{blue}{z_{1}}^{(1)} & = 
+  \begin{pmatrix} 1328.6 & 297.6333 & 259 & 73.00000 & 19.33333 & 347.3667 \end{pmatrix}^T \\
+  \color{red}{z_{2,k}}^{(1)} & = \frac{1}{p} \sum_{i=1}^{p} x_{i,k} \\
+  \color{red}{z_{2}}^{(1)} & = 
+  \begin{pmatrix} 2651.6 & 609.0000 & 223 & 50.33333 & 13.33333 & 724.8667 \end{pmatrix}^T
+\end{align}
+
+* Mit diesen neuen Zentroiden kann nun die nächste Iteration begeonnen werden. 
+
+### 1. Iteration
+
+* Wir berechnen für den ersten Zentroiden die Distanzen
+\begin{align}
+  d_{11} = \lVert x_1 - \color{blue}{z_1}^{(1)} \rVert_2 & = 234.7406 \\
+  d_{21} = \lVert x_2 - \color{blue}{z_1}^{(1)} \rVert_2 & = 271.5252 \\
+  d_{31} = \lVert x_3 - \color{blue}{z_1}^{(1)} \rVert_2 & = 1059.7563 \\
+  d_{41} = \lVert x_4 - \color{blue}{z_1}^{(1)} \rVert_2 & = 486.4673 \\
+  d_{51} = \lVert x_5 - \color{blue}{z_1}^{(1)} \rVert_2 & = 1389.9037 \\
+  d_{61} = \lVert x_6 - \color{blue}{z_1}^{(1)} \rVert_2 & = 1842.1154
+\end{align}
+
+* Wir berechnen für den zweiten Zentroiden die Distanzen
+\begin{align}
+  d_{12} = \lVert x_1 - \color{red}{z_2}^{(1)} \rVert_2 & = 1281.5788 \\
+  d_{22} = \lVert x_2 - \color{red}{z_2}^{(1)} \rVert_2 & = 1162.7476 \\
+  d_{32} = \lVert x_3 - \color{red}{z_2}^{(1)} \rVert_2 & = 364.4340 \\
+  d_{42} = \lVert x_4 - \color{red}{z_2}^{(1)} \rVert_2 & = 1829.1921 \\
+  d_{52} = \lVert x_5 - \color{red}{z_2}^{(1)} \rVert_2 & = 290.1264 \\
+  d_{62} = \lVert x_6 - \color{red}{z_2}^{(1)} \rVert_2 & = 506.3878
+\end{align}
+
+* Wir bestimmen die Cluster-Zuordnung durch das Zeilenminimum in der Distanzmatrix
+\begin{equation}
+  \begin{pmatrix}
+    \color{blue}{234.7406} & 1281.5788 \\
+    \color{blue}{271.5252} & 1162.7476 \\
+    1059.7563 & \color{red}{364.4340} \\
+    \color{blue}{486.4673} & 1829.1921 \\
+    1389.9037 & \color{red}{290.1264} \\
+    1842.1154 & \color{red}{506.3878}
+  \end{pmatrix}
+\end{equation}
+
+* Wir können erkennen, dass sich die Zuordnung nicht mehr verändert hat. Dies ist ein Zeichen für die Konvergenz des Verfahrens. Die neu-berechneten Zentroiden konvergieren ebenfalls und unterscheiden sich nicht mehr von den vorherigen. Damit sind die beiden gefundenen Cluster mit Zentroiden:
+  * Cluster $\color{blue}1$: $x_1, x_2, x_4$ und $\color{blue}{z_{1}} = \begin{pmatrix} 1328.6 & 297.6333 & 259 & 73.00000 & 19.33333 & 347.3667 \end{pmatrix}^T$
+  * Cluster $\color{red}2$: $x_3, x_5, x_6$ und $\color{red}{z_{2}} = \begin{pmatrix} 2651.6 & 609.0000 & 223 & 50.33333 & 13.33333 & 724.8667 \end{pmatrix}^T$
+
+## Umsetzung des K-Means-Verfahrens in R
+
+```{r}
+data <- matrix(c(
+  c(1524.8, 265.4, 272, 79, 24, 223.5),
+  c(1596.9, 323.6, 285, 87, 23, 333.9),
+  c(2299.7, 610.3, 241, 45, 9, 632.1),
+  c(864.1, 303.9, 220, 53, 11, 484.7),
+  c(2669.9, 645.5, 202, 61, 15, 438.6),
+  c(2985.2, 571.2, 226, 45, 16, 1103.9)
+), byrow = T, ncol = 6)
+```
+
+Die folgende R-Function `k_means` implementiert das K-Means-Verfahren. Als Argument mussen die Datenmatrix `data` übergeben werden. Alle weiteren Argumente sind optional. Hierbei ist `k` die Anzahl der zu bildenden Cluster, `center_idx` ein Vektor mit den Indizies der Startwerte für die Zentroiden (dieser muss die Dimension `k` besitzen), `output` ein Flag, ob zu jeder Iteration Zwischenschritte als Ausgabe in der Konsole ge-printed werden sollen und `max_iter` die maximalen Iterationen des Verfahrens. Das R-Package `"pracma"` wird geladen, um die `Norm()` Function für Vekoren verwenden zu können. Dabei entspricht `Norm(x, p=2)` dem euklidschen Abstand, wenn `x` ein Vektor ist.
+
+```{r}
+if (!require("pracma")) install.packages("pracma", repos = "http://cran.rstudio.com")
+library("pracma")
+```
+
+Zunächst wird überprüft, ob man sich in der ersten Iteration `iter = 0` des Verfahrens befindet. Ist dies der Fall, werden die Startwerte für die Zentroiden zugewiesen. Wenn kein Startwert über `center_idx` im Function-Call übergebenn wurde, werden zufällig `k` Startewerte aus den Daten `data` bestimmt. Die Variable `centers_before` speichert die Zentroiden aus dem vorherigen Iterationsschritt, um später die Konvergenz des Verfahrens zu überprüfen. Die beiden Matrizen `dist` und `label` stellen Container für die berechneten euklidschen Abstände zu den Zentroiden und der Zuordnung der Cluster dar. In der ersten `for`-Schleife werden die euklidschen Abstände zwischen den Zentroiden und allen Beobachtungen aus `data` berechnet. Anschließend werden die Cluster auf Basis der minimalen Abstände gebildet. Die Matrix `label` wird dabei zeilenweise gefüllt. Die Spalte, die der besten Cluster-Zuordnung entspricht, erählt den Wert `1`, alle anderen Spalten werden `0` gesetzt. Diese Information wird in der nachfolgenden `for`-Schleife verwendet, um die Mittelwerte der neuen Cluster-Zuordnungen zu berechenen. Dies entspricht den neuen, angepassten Zentroiden. IM letzten Schritt wird noch die Konvergenz des Verfahrens überprüft. Unterscheidet sich die Matrix-Norm der Differenz der Zentroiden aus dem aktuellen und vorherigen Iterationsschritt nicht von Null, liegt die Konvergenz der Lösung vor und die Schleife kann vorzeitig verlassen werden. Die Function gibt eine Liste bestehend aus den finalen Lables (also den Cluster-Zordnungen für jeden Datenpunkt) und den finalen Zentroiden zurück. 
+
+```{r}
+k_means <- function(data, k=3, center_idx = NULL, output = FALSE, max_iter = 10) {
+  iter <- 0
+  while (iter < max_iter) {
+    # Set starting centroids. If no starting values are
+    # provided within the function call, random starting
+    # values are chosen. 
+    if (iter == 0) {
+      if (is.null(center_idx)) {
+        centers <- data[sample(1:nrow(data), size = k, replace = FALSE), ]
+      } else {
+        centers <- data[center_idx, ]
+      }
+    }
+    
+    centers_before <- centers
+    
+    # Containers for distances and cluster labels.
+    dist <- matrix(nrow = nrow(data), ncol = k)
+    label <- matrix(nrow = nrow(data), ncol = k)
+    
+    # Calculate distances from each observation to the selected centroids.
+    for (row in 1:nrow(data)) {
+      for (clus in 1:k) {
+        dist[row, clus] <- Norm(centers[clus, ] - data[row, ], p=2)
+      }
+      
+      # Determine the minimum distance from each observation to a centroid.
+      label[row, ] <- ifelse(dist[row, ] == min(dist[row, ]), 1, 0) 
+    }
+    
+    # Calculate new centroids.
+    for (i in 1:ncol(label)){
+      centers[i, ] <- apply(data[which(label[, i] == 1), ], MARGIN = 2, FUN = mean)
+    }
+    
+    # Print output for every iteration.
+    if (output) {
+      print(paste("Iteration: ", iter))
+      print("------------------------")
+      print("Distance matrix:")
+      print(dist)
+      print("Cluster labels (by column):")
+      print(label)
+      print("Centers:")
+      print(centers)
+      print("")
+    }
+    
+    # If the distance between the new and the old center is equal to
+    # zero, convergence is reached and we can exit the loop. 
+    error <- norm(abs(centers - centers_before))
+    if (error == 0) {
+      print(paste0("Converged after ", iter, " iterations."))
+      break
+    }
+    
+    iter <- iter + 1
+  }
+  
+  return(list(label, centers))
+}
+```
+
+Die Function `k_means()` kann nun auf das gegebene Datenset aus Aufgabe 7d) angewandt werden. Der Iterationsverlauf ist hier dargestellt.
+
+```{r}
+# Fit with fixed starting values.
+fit <- k_means(data, k = 2, center_idx = c(1,3), output = TRUE, max_iter = 10)
+```
+
+Als Cluster-Zuordnungen und Zentroiden ergeben sich abschließend:
+
+```{r}
+fit
+```
+
+## Vergleich mit der Base R Implementierung
+
+Zum vergleichen unserer eigenen Umsetzung ziehen wir die Base R Implementierung des K-Means-Verfahrenes heran. Die Clusteranalyse lässt sich schnell durchführen.
+
+```{r}
+KM=kmeans(data,2)
+KM
+```
+
+Man sieht schnell, dass `KM$Cluster_Means` und `KM$Cluster_Vector` unseren Ergebnissen entsprechen. Zum Schluss können wir diese Resultate noch graphisch veranschaulichen.
+
+```{r}
+plot(data, col = KM$cluster, lwd=2)
+points(KM$centers, col=1:2, pch=8, lwd=3)
+points(fit[[2]], col="green", pch=10, lwd=1)
+```
+
