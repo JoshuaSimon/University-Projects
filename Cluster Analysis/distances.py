@@ -18,7 +18,7 @@ x_1 = [55, 2500, 4]
 x_2 = [23, 1800, 3]
 x_3 = [31, 3500, 0]
 
-
+"""
 print("Minkowski distance for q = 1:")
 print(minkowski_metric(x_1, x_2, 1))
 print(minkowski_metric(x_1, x_3, 1))
@@ -30,6 +30,17 @@ print(minkowski_metric(x_1, x_2, 2))
 print(minkowski_metric(x_1, x_3, 2))
 print(minkowski_metric(x_2, x_3, 2))
 print("\n")
+"""
+
+print("q = 1")
+print(minkowski_metric(x_1, x_2, 1, norm=True))
+print(minkowski_metric(x_1, x_3, 1, norm=True))
+print(minkowski_metric(x_2, x_3, 1, norm=True))
+
+print("q = 2")
+print(minkowski_metric(x_1, x_2, 2, norm=True))
+print(minkowski_metric(x_1, x_3, 2, norm=True))
+print(minkowski_metric(x_2, x_3, 2, norm=True))
 
 
 # Ex. 6b)

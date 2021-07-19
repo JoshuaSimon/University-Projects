@@ -7,6 +7,21 @@ X <- matrix(c(x_1, x_2, x_3), byrow = T, ncol = 3)
 dist(X, method = "manhattan")
 dist(X, method = "euclidean")
 
+## Normierte Minkowski Metriken
+Y <- X
+q <- 2
+for (i in 1:3) {
+  mean <- mean(X[, i])
+  #sd <- sd(X[, i])
+  sd <- (1/length(X[, i]) * sum(abs(X[, i] - mean)^q))^(1/q)
+  print(paste(i, mean, sd))
+  Y[, i] <- (X[, i] - mean) / sd
+}
+
+dist(Y, method = "manhattan")
+dist(Y, method = "euclidean")
+
+
 
 # Aufgabe 7
 # a)
